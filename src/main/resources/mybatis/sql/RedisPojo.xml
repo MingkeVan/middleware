@@ -1,0 +1,17 @@
+<mapper namespace="com.cffex.middleware.mapper.RedisOperationMapper" >
+    <select id="getRedisPojo" resultType="com.cffex.middleware.pojo.RedisPojo">
+        select * from t_redis where id = #{id}
+    </select>
+
+    <insert id="insertRedisPojo" parameterType="com.cffex.middleware.pojo.RedisPojo">
+        insert into t_redis(name, host, port, username, passwd) values(#{name}, #{host}, #{port}, #{username}, #{passwd})
+    </insert>
+
+    <update id="updateRedisPojo" parameterType="com.cffex.middleware.pojo.RedisPojo">
+        update t_redis set name=#{name}, host=#{host}, port=#{port}, username=#{username}, passwd=#{passwd} where name=#{name}
+    </update>
+
+    <delete id="deleteRedisPojo" parameterType="com.cffex.middleware.pojo.RedisPojo">
+        delete from t_redis where name=#{name}
+    </delete>
+</mapper>
