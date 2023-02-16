@@ -1,4 +1,4 @@
-<mapper namespace="com.cffex.middleware.mapper.RedisOperationMapper" >
+<mapper namespace="com.mw.middleware.mapper.RedisOperationMapper" >
     <select id="getRedisPojo" resultType="com.cffex.middleware.pojo.RedisPojo">
         select * from t_redis where id = #{id}
     </select>

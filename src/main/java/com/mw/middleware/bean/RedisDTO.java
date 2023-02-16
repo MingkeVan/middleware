@@ -1,6 +1,6 @@
-package com.cffex.middleware.bean;
+package com.mw.middleware.bean;
 
-public class RedisPojo {
+public class RedisDTO {
 
     // name
     String name;
@@ -9,13 +9,15 @@ public class RedisPojo {
     String host;
 
     // port
-    int port;
+    String port;
 
     // username
     String username;
 
     // password
     String password;
+
+    String status;
 
     public String getName() {
         return name;
@@ -30,14 +32,14 @@ public class RedisPojo {
     }
 
     public void setHost(String host) {
-    this.host = host;
+        this.host = host;
     }
 
-    public int getPort() {
+    public String getPort() {
         return port;
     }
 
-    public void setPort(int port) {
+    public void setPort(String port) {
         this.port = port;
     }
 
@@ -55,5 +57,13 @@ public class RedisPojo {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

@@ -1,11 +1,8 @@
-package com.cffex.middleware.controller;
+package com.mw.middleware.controller;
 
-import com.cffex.middleware.bean.RedisDTO;
-import com.cffex.middleware.bean.RedisPojo;
-import com.cffex.middleware.mapper.RedisOperationMapper;
-import com.cffex.middleware.service.RedisOperationService;
+import com.mw.middleware.bean.RedisDTO;
+import com.mw.middleware.service.RedisOperationService;
 import org.slf4j.Logger;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

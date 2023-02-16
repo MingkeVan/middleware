@@ -1,14 +1,12 @@
-package com.cffex.middleware.controller;
+package com.mw.middleware.controller;
 
-import com.cffex.middleware.bean.RedisDTO;
-import com.cffex.middleware.service.RedisOperationService;
+import com.mw.middleware.bean.RedisDTO;
+import com.mw.middleware.service.RedisOperationService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 // RedisDto增删改查单元测试
 @SpringBootTest

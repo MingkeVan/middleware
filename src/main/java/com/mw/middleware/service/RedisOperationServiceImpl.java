@@ -1,8 +1,8 @@
-package com.cffex.middleware.service;
+package com.mw.middleware.service;
 
-import com.cffex.middleware.bean.RedisDTO;
-import com.cffex.middleware.bean.RedisPojo;
-import com.cffex.middleware.mapper.RedisOperationMapper;
+import com.mw.middleware.bean.RedisDTO;
+import com.mw.middleware.bean.RedisPojo;
+import com.mw.middleware.mapper.RedisOperationMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

@@ -1,6 +1,6 @@
-package com.cffex.middleware.mapper;
+package com.mw.middleware.mapper;
 
-import com.cffex.middleware.bean.RedisPojo;
+import com.mw.middleware.bean.RedisPojo;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 

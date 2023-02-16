@@ -1,7 +1,6 @@
-package com.cffex.middleware.service;
+package com.mw.middleware.service;
 
-import com.cffex.middleware.bean.RedisDTO;
-import com.cffex.middleware.bean.RedisPojo;
+import com.mw.middleware.bean.RedisDTO;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
-package com.cffex.middleware;
+package com.mw.middleware;
 
-import com.cffex.middleware.bean.RedisDTO;
-import com.cffex.middleware.service.RedisOperationService;
+import com.mw.middleware.bean.RedisDTO;
+import com.mw.middleware.service.RedisOperationService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
