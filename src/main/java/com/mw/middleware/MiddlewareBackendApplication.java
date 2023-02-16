@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.cffex.middleware.mapper")
+@MapperScan("com.mw.middleware.mapper")
 public class MiddlewareBackendApplication {
 
 	public static void main(String[] args) {

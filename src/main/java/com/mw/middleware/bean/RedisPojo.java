@@ -15,7 +15,7 @@ public class RedisPojo {
     String username;
 
     // password
-    String password;
+    String passwd;
 
     public String getName() {
         return name;
@@ -49,11 +49,11 @@ public class RedisPojo {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswd() {
+        return passwd;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswd(String passwd) {
+        this.passwd = passwd;
     }
 }

@@ -6,6 +6,7 @@ import com.mw.middleware.mapper.RedisOperationMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,7 @@ public class RedisOperationServiceImpl implements RedisOperationService {
         redisPojo.setHost(redisDTO.getHost());
         redisPojo.setPort(Integer.parseInt(redisDTO.getPort()));
         redisPojo.setUsername(redisDTO.getUsername());
-        redisPojo.setPassword(redisDTO.getPassword());
+        redisPojo.setPasswd(redisDTO.getPassword());
         return redisOperationMapper.addRedisPojo(redisPojo);
     }
 
@@ -37,9 +38,19 @@ public class RedisOperationServiceImpl implements RedisOperationService {
         redisPojo.setHost(redisDTO.getHost());
         redisPojo.setPort(Integer.parseInt(redisDTO.getPort()));
         redisPojo.setUsername(redisDTO.getUsername());
-        redisPojo.setPassword(redisDTO.getPassword());
+        redisPojo.setPasswd(redisDTO.getPassword());
         return redisOperationMapper.updateRedisPojo(redisPojo);
     }
+
+    public RedisDTO getRedisDTO(String name) {
+        RedisPojo redisPojo = redisOperationMapper.getRedisPojo(name);
+        if (redisPojo == null) {
+            return null;
+        }
+        return new RedisDTO(redisPojo);
+    }
+
+
 
     @Override
     public List<RedisDTO> listRedisDTO() {
@@ -49,20 +60,12 @@ public class RedisOperationServiceImpl implements RedisOperationService {
 
         // check redisPojos
         if (redisPojos == null || redisPojos.size() == 0) {
-            return null;
+            // 返回空list
+            return Collections.emptyList();
         }
 
-        // convert redisPojos to redisDTO
-        List<RedisDTO> redisDTOs = redisPojos.stream().map(redisPojo -> {
-            RedisDTO redisDTO = new RedisDTO();
-            redisDTO.setName(redisPojo.getName());
-            redisDTO.setHost(redisPojo.getHost());
-            redisDTO.setPort(String.valueOf(redisPojo.getPort()));
-            redisDTO.setUsername(redisPojo.getUsername());
-            redisDTO.setPassword(redisPojo.getPassword());
-            redisDTO.setStatus("OK");
-            return redisDTO;
-        }).collect(Collectors.toList());
-        return redisDTOs;
+        // convert redisPojo to redisDTO
+        return redisPojos.stream().map(RedisDTO::new).collect(Collectors.toList());
+
     }
 }

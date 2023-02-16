@@ -13,6 +13,8 @@ public interface RedisOperationService {
 
     int updateRedisDTO(RedisDTO redisDTO);
 
+    RedisDTO getRedisDTO(String name);
+
     List<RedisDTO> listRedisDTO();
 
 }
