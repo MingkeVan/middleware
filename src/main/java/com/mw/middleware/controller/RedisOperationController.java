@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.mw.middleware.utils.CommonUtil.isValidIp;
+import static com.mw.middleware.utils.CommonUtil.isValidPort;
+
 @RestController
 public class RedisOperationController {
 
@@ -106,6 +109,11 @@ public class RedisOperationController {
             redisDTO1.setPort(redisDTO.getPort());
         }
 
+        // 判断password是否为空
+        if (!Strings.isNullOrEmpty(redisDTO.getPassword())) {
+            redisDTO1.setPassword(redisDTO.getPassword());
+        }
+
         // update redisPojo
         redisOperationService.updateRedisDTO(redisDTO1);
 
@@ -181,35 +189,4 @@ public class RedisOperationController {
         }
     }
 
-    // isValidIp
-    public boolean isValidIp(String ip) {
-        String[] ipArr = ip.split("\\.");
-        if (ipArr.length != 4) {
-            return false;
-        }
-        for (String ipItem : ipArr) {
-            if (ipItem.length() > 3) {
-                return false;
-            }
-            try {
-                int ipItemInt = Integer.parseInt(ipItem);
-                if (ipItemInt > 255 || ipItemInt < 0) {
-                    return false;
-                }
-            } catch (NumberFormatException e) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // check port is valid
-    public boolean isValidPort(String port) {
-        try {
-            Integer.parseInt(port);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-        return true;
-    }
 }

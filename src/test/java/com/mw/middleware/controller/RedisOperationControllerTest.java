@@ -211,7 +211,7 @@ class RedisOperationControllerTest {
 
         // 获取redisDTO redis resource not exist
         Assertions.assertThrows(Exception.class, () -> {
-            redisOperationController.get("test");
+            redisOperationController.get("123");
         }, "redis resource not exist");
     }
 }

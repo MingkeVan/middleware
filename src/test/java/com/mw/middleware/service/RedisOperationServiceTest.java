@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @SpringBootTest
 public class RedisOperationServiceTest {
     @Autowired
@@ -38,6 +40,10 @@ public class RedisOperationServiceTest {
         RedisDTO redisDTO1 = redisOperationService.getRedisDTO("test");
         System.out.println(redisDTO1);
         Assertions.assertEquals("127.0.0.2", redisDTO1.getHost());
+
+        // 测试list
+        List<RedisDTO> redisDTOS = redisOperationService.listRedisDTO();
+        Assertions.assertTrue(redisDTOS.size() > 0);
 
         // 删除redisPojo
         redisOperationService.deleteRedisDTO("test");

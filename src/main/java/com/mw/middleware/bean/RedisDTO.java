@@ -19,18 +19,18 @@ public class RedisDTO {
     // password
     String password;
 
-    String status;
+    RedisStatus status;
 
     public RedisDTO() {
     }
 
-    public RedisDTO(RedisPojo redisPojo) {
+    public RedisDTO(RedisPojo redisPojo,RedisStatus redisStatus) {
         this.name = redisPojo.getName();
         this.host = redisPojo.getHost();
         this.port = String.valueOf(redisPojo.getPort());
         this.username = redisPojo.getUsername();
         this.password = redisPojo.getPasswd();
-        this.status = "unknown";
+        this.status = redisStatus;
     }
 
     public String getName() {
@@ -73,11 +73,11 @@ public class RedisDTO {
         this.password = password;
     }
 
-    public String getStatus() {
+    public RedisStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(RedisStatus status) {
         this.status = status;
     }
 

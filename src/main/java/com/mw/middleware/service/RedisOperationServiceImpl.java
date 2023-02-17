@@ -2,7 +2,10 @@ package com.mw.middleware.service;
 
 import com.mw.middleware.bean.RedisDTO;
 import com.mw.middleware.bean.RedisPojo;
+import com.mw.middleware.bean.RedisStatus;
 import com.mw.middleware.mapper.RedisOperationMapper;
+import com.mw.middleware.job.RedisStatusScheduler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -14,6 +17,9 @@ import java.util.stream.Collectors;
 public class RedisOperationServiceImpl implements RedisOperationService {
     @Resource
     RedisOperationMapper redisOperationMapper;
+
+    @Autowired
+    RedisStatusScheduler redisStatusScheduler;
 
     @Override
     public int addRedisDTO(RedisDTO redisDTO) {
@@ -47,9 +53,8 @@ public class RedisOperationServiceImpl implements RedisOperationService {
         if (redisPojo == null) {
             return null;
         }
-        return new RedisDTO(redisPojo);
+        return new RedisDTO(redisPojo, getRedisStatus(redisPojo));
     }
-
 
 
     @Override
@@ -65,7 +70,17 @@ public class RedisOperationServiceImpl implements RedisOperationService {
         }
 
         // convert redisPojo to redisDTO
-        return redisPojos.stream().map(RedisDTO::new).collect(Collectors.toList());
+        return redisPojos.stream().map(x -> {
 
+            RedisDTO redisDTO = new RedisDTO(x, getRedisStatus(x));
+            return redisDTO;
+        }).collect(Collectors.toList());
+
+    }
+
+    // getRedisStatus
+    private RedisStatus getRedisStatus(RedisPojo redisPojo) {
+        String key = redisStatusScheduler.generateKey(redisPojo);
+        return redisStatusScheduler.getStatusCache().get(key);
     }
 }
