@@ -1,5 +1,6 @@
 package com.mw.middleware.controller;
 
+import com.google.common.base.Strings;
 import com.mw.middleware.bean.RedisDTO;
 import com.mw.middleware.bean.ResultResponse;
 import com.mw.middleware.exception.BusinessException;
@@ -49,8 +50,8 @@ public class RedisOperationController {
         }
 
         String name = params.get("name");
-        // check name
-        if (name == null || name.length() == 0) {
+        // check name is null or empty
+        if(Strings.isNullOrEmpty(name)) {
             logger.error("name is null or empty");
             throw new BusinessException("name is null or empty");
         }
@@ -69,22 +70,14 @@ public class RedisOperationController {
 
     // update redisPojo
     @PostMapping(value = "/redis/update", produces = "application/json")
-    public ResultResponse update(String name, @RequestBody RedisDTO redisDTO) {
+    public ResultResponse<Void> update(String name, @RequestBody RedisDTO redisDTO) {
 
         name = redisDTO.getName();
-        // check name
-        if (name == null || name.length() == 0) {
+        // check name is null or empty
+        if(Strings.isNullOrEmpty(name)) {
             logger.error("name is null or empty");
             throw new BusinessException("name is null or empty");
         }
-
-        // check redisDTO
-        if (redisDTO == null) {
-            logger.error("redisDTO is null");
-            throw new BusinessException("redisDTO is null");
-        }
-
-
 
         // 判断redisDTO是否存在
         RedisDTO redisDTO1 = redisOperationService.getRedisDTO(redisDTO.getName());
@@ -94,7 +87,7 @@ public class RedisOperationController {
         }
 
         // 判断host是否为空
-        if (!StringUtils.isEmpty(redisDTO.getHost())) {
+        if (!Strings.isNullOrEmpty(redisDTO.getHost())) {
             // 判断host合法
             if (!isValidIp(redisDTO.getHost())) {
                 logger.error("host is not valid");
@@ -104,7 +97,7 @@ public class RedisOperationController {
         }
 
         // 判断port是否为空
-        if (!StringUtils.isEmpty(redisDTO.getPort())) {
+        if (!Strings.isNullOrEmpty(redisDTO.getPort())) {
             // 判断port合法
             if (!isValidPort(redisDTO.getPort())) {
                 logger.error("port is not valid");
@@ -123,7 +116,7 @@ public class RedisOperationController {
     @GetMapping(value = "/redis/{name}", produces = "application/json")
     public ResultResponse<RedisDTO> get(@PathVariable String name) {
         // check name
-        if (name == null || name.length() == 0) {
+        if (Strings.isNullOrEmpty(name)) {
             logger.error("name is null or empty");
             throw new BusinessException("name is null or empty");
         }
@@ -156,13 +149,13 @@ public class RedisOperationController {
         }
 
         // check name
-        if (redisDTO.getName() == null || redisDTO.getName().length() == 0) {
+        if (Strings.isNullOrEmpty(redisDTO.getName())) {
             logger.error("name is null or empty");
             throw new BusinessException("name is null or empty");
         }
 
         // 判断host是否为空
-        if (redisDTO.getHost() == null || redisDTO.getHost().length() == 0) {
+        if (Strings.isNullOrEmpty(redisDTO.getHost())) {
             logger.error("host is null or empty");
             throw new BusinessException("host is null or empty");
         }
@@ -176,7 +169,7 @@ public class RedisOperationController {
         }
 
         // 判断port是否为空
-        if (redisDTO.getPort() == null || redisDTO.getPort().length() == 0) {
+        if (Strings.isNullOrEmpty(redisDTO.getPort())) {
             logger.error("port is null or empty");
             throw new BusinessException("port is null or empty");
         }
