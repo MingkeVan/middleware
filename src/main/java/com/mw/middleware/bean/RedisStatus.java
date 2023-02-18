@@ -11,7 +11,38 @@ public class RedisStatus {
     private double memFragmentationRatio;
     private long keyspaceHits;
     private long keyspaceMisses;
+
+    // keyspace hit rate
+    private double keyspaceHitRate;
+
+    // instantaneous ops per second
+    private long instantaneousOpsPerSec;
+
+
+
     private long totalConnectionsReceived;
+
+    //rejected connections
+    private long rejectedConnections;
+
+    //expired keys
+    private long expiredKeys;
+
+    //evicted keys
+    private long evictedKeys;
+
+    //used cpu sys
+    private double usedCpuSys;
+
+    //used cpu user
+    private double usedCpuUser;
+
+    //used cpu sys children
+    private double usedCpuSysChildren;
+
+    //used cpu user children
+    private double usedCpuUserChildren;
+
     private long totalCommandsProcessed;
     private String role;
     private String clusterEnabled;
@@ -120,6 +151,78 @@ public class RedisStatus {
 
     public void setClusterEnabled(String clusterEnabled) {
         this.clusterEnabled = clusterEnabled;
+    }
+
+    public double getKeyspaceHitRate() {
+        return keyspaceHitRate;
+    }
+
+    public void setKeyspaceHitRate(double keyspaceHitRate) {
+        this.keyspaceHitRate = keyspaceHitRate;
+    }
+
+    public long getInstantaneousOpsPerSec() {
+        return instantaneousOpsPerSec;
+    }
+
+    public void setInstantaneousOpsPerSec(long instantaneousOpsPerSec) {
+        this.instantaneousOpsPerSec = instantaneousOpsPerSec;
+    }
+
+    public long getRejectedConnections() {
+        return rejectedConnections;
+    }
+
+    public void setRejectedConnections(long rejectedConnections) {
+        this.rejectedConnections = rejectedConnections;
+    }
+
+    public long getExpiredKeys() {
+        return expiredKeys;
+    }
+
+    public void setExpiredKeys(long expiredKeys) {
+        this.expiredKeys = expiredKeys;
+    }
+
+    public long getEvictedKeys() {
+        return evictedKeys;
+    }
+
+    public void setEvictedKeys(long evictedKeys) {
+        this.evictedKeys = evictedKeys;
+    }
+
+    public double getUsedCpuSys() {
+        return usedCpuSys;
+    }
+
+    public void setUsedCpuSys(double usedCpuSys) {
+        this.usedCpuSys = usedCpuSys;
+    }
+
+    public double getUsedCpuUser() {
+        return usedCpuUser;
+    }
+
+    public void setUsedCpuUser(double usedCpuUser) {
+        this.usedCpuUser = usedCpuUser;
+    }
+
+    public double getUsedCpuSysChildren() {
+        return usedCpuSysChildren;
+    }
+
+    public void setUsedCpuSysChildren(double usedCpuSysChildren) {
+        this.usedCpuSysChildren = usedCpuSysChildren;
+    }
+
+    public double getUsedCpuUserChildren() {
+        return usedCpuUserChildren;
+    }
+
+    public void setUsedCpuUserChildren(double usedCpuUserChildren) {
+        this.usedCpuUserChildren = usedCpuUserChildren;
     }
 }
 

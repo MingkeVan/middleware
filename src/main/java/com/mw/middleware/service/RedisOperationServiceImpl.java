@@ -80,7 +80,6 @@ public class RedisOperationServiceImpl implements RedisOperationService {
 
     // getRedisStatus
     private RedisStatus getRedisStatus(RedisPojo redisPojo) {
-        String key = redisStatusScheduler.generateKey(redisPojo);
-        return redisStatusScheduler.getStatusCache().get(key);
+        return null;
     }
 }

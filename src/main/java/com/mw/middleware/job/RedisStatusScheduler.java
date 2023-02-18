@@ -1,25 +1,16 @@
 package com.mw.middleware.job;
 
-import com.google.common.base.Strings;
-import com.mw.middleware.bean.RedisDTO;
-import com.mw.middleware.bean.RedisPojo;
+import com.mw.middleware.bean.RedisInfo;
 import com.mw.middleware.bean.RedisStatus;
-import com.mw.middleware.mapper.RedisOperationMapper;
-import com.mw.middleware.service.RedisOperationService;
-import io.lettuce.core.RedisClient;
-import io.lettuce.core.RedisURI;
-import io.lettuce.core.api.StatefulRedisConnection;
+import com.mw.middleware.config.RedisTemplateFactory;
+import com.mw.middleware.mapper.RedisInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.RedisServer;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class RedisStatusScheduler {
@@ -28,115 +19,96 @@ public class RedisStatusScheduler {
 
     // RedisOperationService
     @Resource
-    private RedisOperationMapper redisOperationMapper;
+    private RedisInfoMapper redisInfoMapper;
 
-    private final Map<String, RedisStatus> statusCache = new HashMap<>();
-    private final Map<String, RedisClient> redisClientCache = new HashMap<>();
+    @Autowired
+    RedisTemplateFactory redisTemplateFactory;
+
+    private final Map<Long, RedisStatus> statusCache = new HashMap<>();
 
     @Scheduled(fixedRate = 60000) // 每分钟执行一次
     public void updateRedisStatus() {
-        List<RedisPojo> servers = getRedisServers();
-        for (RedisPojo server : servers) {
-            RedisClient redisClient = getRedisClient(server);
-            try (StatefulRedisConnection<String, String> connection = redisClient.connect()) {
-                String info = connection.sync().info();
-                RedisStatus status = parseRedisStatus(info);
-                statusCache.put(generateKey(server), status);
-            } catch (Exception e) {
-                logger.error("Failed to get redis status", e);
+        // 获取所有的RedisInfo
+        List<RedisInfo> redisInfoList = redisInfoMapper.selectAllRedisInfo();
+
+        // 遍历所有的RedisInfo
+        for (RedisInfo redisInfo : redisInfoList) {
+
+            RedisTemplate<String, Object> redisTemplate = redisTemplateFactory.getRedisTemplate(redisInfo.getId());
+            // 获取info
+            Properties info = redisTemplate.getRequiredConnectionFactory().getConnection().info();
+            // check info
+            if (info == null) {
+                logger.error("RedisInfo is null, id: {}", redisInfo.getId());
+                continue;
             }
+
+            // 解析info
+            RedisStatus status = parseInfo(info);
+            statusCache.put(redisInfo.getId(), status);
         }
     }
 
-    private RedisStatus parseRedisStatus(String info) {
-        RedisStatus status = new RedisStatus();
-        String[] lines = info.split("\\r?\\n");
-        for (String line : lines) {
-            String[] parts = line.split(":");
-            if (parts.length == 2) {
-                String key = parts[0].trim();
-                String value = parts[1].trim();
-                switch (key) {
-                    case "redis_version":
-                        status.setVersion(value);
-                        break;
-                    case "uptime_in_seconds":
-                        status.setUptimeInSeconds(Long.parseLong(value));
-                        break;
-                    case "connected_clients":
-                        status.setConnectedClients(Long.parseLong(value));
-                        break;
-                    case "blocked_clients":
-                        status.setBlockedClients(Long.parseLong(value));
-                        break;
-                    case "used_memory":
-                        status.setUsedMemory(Long.parseLong(value));
-                        break;
-                    case "used_memory_rss":
-                        status.setUsedMemoryRss(Long.parseLong(value));
-                        break;
-                    case "mem_fragmentation_ratio":
-                        status.setMemFragmentationRatio(Double.parseDouble(value));
-                        break;
-                    case "keyspace_hits":
-                        status.setKeyspaceHits(Long.parseLong(value));
-                        break;
-                    case "keyspace_misses":
-                        status.setKeyspaceMisses(Long.parseLong(value));
-                        break;
-                    case "total_connections_received":
-                        status.setTotalConnectionsReceived(Long.parseLong(value));
-                        break;
-                    case "total_commands_processed":
-                        status.setTotalCommandsProcessed(Long.parseLong(value));
-                        break;
-                    case "role":
-                        status.setRole(value);
-                        break;
-                    case "cluster_enabled":
-                        status.setClusterEnabled(value);
-                        break;
-                    default:
-                        // Ignore other keys
-                        break;
-                }
-            }
+    // getRedisStatus by id
+    public RedisStatus getRedisStatus(Long id) {
+        return statusCache.get(id);
+    }
+
+    // updateRedisStatus
+    public void updateRedisStatus(Long id) {
+        RedisInfo redisInfo = redisInfoMapper.selectRedisInfoById(id);
+        RedisTemplate<String, Object> redisTemplate = redisTemplateFactory.getRedisTemplate(redisInfo.getId());
+        Properties info = redisTemplate.getRequiredConnectionFactory().getConnection().info();
+        if (info == null) {
+            logger.error("RedisInfo is null, id: {}", redisInfo.getId());
+            return;
         }
+        RedisStatus status = parseInfo(info);
+        statusCache.put(redisInfo.getId(), status);
+    }
+
+    // deleteRedisStatus by id
+    public void deleteRedisStatus(Long id) {
+        statusCache.remove(id);
+    }
+
+    // addRedisStatus by id
+    public void addRedisStatus(Long id) {
+        RedisInfo redisInfo = redisInfoMapper.selectRedisInfoById(id);
+        RedisTemplate<String, Object> redisTemplate = redisTemplateFactory.getRedisTemplate(redisInfo.getId());
+        Properties info = redisTemplate.getRequiredConnectionFactory().getConnection().info();
+        if (info == null) {
+            logger.error("RedisInfo is null, id: {}", redisInfo.getId());
+            return;
+        }
+        RedisStatus status = parseInfo(info);
+        statusCache.put(redisInfo.getId(), status);
+    }
+
+    //parseInfo Optional.ofNullable
+    private RedisStatus parseInfo(Properties info) {
+        RedisStatus status = new RedisStatus();
+        status.setVersion(info.getProperty("redis_version"));
+        status.setUptimeInSeconds(Long.parseLong(Optional.ofNullable(info.getProperty("uptime_in_seconds")).orElse("0")));
+        status.setConnectedClients(Long.parseLong(Optional.ofNullable(info.getProperty("connected_clients")).orElse("0")));
+        status.setBlockedClients(Long.parseLong(Optional.ofNullable(info.getProperty("blocked_clients")).orElse("0")));
+        status.setUsedMemory(Long.parseLong(Optional.ofNullable(info.getProperty("used_memory")).orElse("0")));
+        status.setUsedMemoryRss(Long.parseLong(Optional.ofNullable(info.getProperty("used_memory_rss")).orElse("0")));
+        status.setMemFragmentationRatio(Double.parseDouble(Optional.ofNullable(info.getProperty("mem_fragmentation_ratio")).orElse("0")));
+        status.setKeyspaceHits(Long.parseLong(Optional.ofNullable(info.getProperty("keyspace_hits")).orElse("0")));
+        status.setKeyspaceMisses(Long.parseLong(Optional.ofNullable(info.getProperty("keyspace_misses")).orElse("0")));
+        status.setKeyspaceHitRate(Double.parseDouble(Optional.ofNullable(info.getProperty("keyspace_hit_rate")).orElse("0")));
+        status.setInstantaneousOpsPerSec(Long.parseLong(Optional.ofNullable(info.getProperty("instantaneous_ops_per_sec")).orElse("0")));
+        status.setTotalCommandsProcessed(Long.parseLong(Optional.ofNullable(info.getProperty("total_commands_processed")).orElse("0")));
+        status.setRejectedConnections(Long.parseLong(Optional.ofNullable(info.getProperty("rejected_connections")).orElse("0")));
+        status.setExpiredKeys(Long.parseLong(Optional.ofNullable(info.getProperty("expired_keys")).orElse("0")));
+        status.setEvictedKeys(Long.parseLong(Optional.ofNullable(info.getProperty("evicted_keys")).orElse("0")));
+        status.setUsedCpuSys(Double.parseDouble(Optional.ofNullable(info.getProperty("used_cpu_sys")).orElse("0")));
+        status.setUsedCpuUser(Double.parseDouble(Optional.ofNullable(info.getProperty("used_cpu_user")).orElse("0")));
+        status.setUsedCpuSysChildren(Double.parseDouble(Optional.ofNullable(info.getProperty("used_cpu_sys_children")).orElse("0")));
+        status.setUsedCpuUserChildren(Double.parseDouble(Optional.ofNullable(info.getProperty("used_cpu_user_children")).orElse("0")));
         return status;
     }
 
 
-    public Map<String, RedisStatus> getStatusCache() {
-        return Collections.unmodifiableMap(statusCache);
-    }
-
-    // getRedisServer
-    private List<RedisPojo> getRedisServers() {
-        return redisOperationMapper.listRedisPojo();
-    }
-
-    private RedisClient getRedisClient(RedisPojo redisPojo) {
-        RedisClient redisClient = redisClientCache.get(generateKey(redisPojo));
-        // check redisClient is null
-        if (redisClient == null) {
-
-            RedisURI.Builder builder = RedisURI.builder()
-                    .withHost(redisPojo.getHost())
-                    .withPort(redisPojo.getPort())
-                    .withTimeout(Duration.ofSeconds(5));
-
-            if (!Strings.isNullOrEmpty(redisPojo.getPasswd())) {
-                builder.withPassword(redisPojo.getPasswd());
-            }
-            redisClient = RedisClient.create(builder.build());
-            redisClientCache.put(generateKey(redisPojo), redisClient);
-        }
-
-        return redisClient;
-    }
-
-    // generate redis key
-    public String generateKey(RedisPojo redisPojo) {
-        return redisPojo.getHost() + ":" + redisPojo.getPort();
-    }
 }
